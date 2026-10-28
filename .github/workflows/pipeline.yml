@@ -23,7 +23,6 @@ jobs:
 
     - name: Run Automated Tests
       run: |
-        # Using python -m pytest directly to ensure proper directory tracking
         python -m pytest
 
     - name: Set up Docker Buildx
@@ -32,8 +31,8 @@ jobs:
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        username: ${{ secrets.sahanalakshmi1 }}
+        password: ${{ secrets.Sahana18032007 }}
 
     - name: Generate Unique SHA Tag
       id: vars
@@ -44,8 +43,7 @@ jobs:
       with:
         context: .
         push: true
-        # Fixed: Removed '|' multi-line block to avoid trailing newline compilation breakages
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/student-calc:${{ steps.vars.outputs.sha_short }}
+        tags: ${{ secrets.sahanalakshmi1 }}/student-calc:${{ steps.vars.outputs.sha_short }}
 
     - name: Set up Kubeconfig
       run: |
@@ -54,7 +52,7 @@ jobs:
 
     - name: Dynamically Update Deployment Manifest Image Tag
       run: |
-        sed -i "s|DOCKERHUB_USERNAME/student-calc:IMAGE_TAG|${{ secrets.DOCKERHUB_USERNAME }}/student-calc:${{ steps.vars.outputs.sha_short }}|g" k8s/deployment.yaml
+        sed -i "s|DOCKERHUB_USERNAME/student-calc:IMAGE_TAG|${{ secrets.sahanalakshmi1 }}/student-calc:${{ steps.vars.outputs.sha_short }}|g" k8s/deployment.yaml
 
     - name: Deploy to Kubernetes
       run: |
