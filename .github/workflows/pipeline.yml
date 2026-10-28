@@ -31,19 +31,23 @@ jobs:
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.sahanalakshmi1 }}
-        password: ${{ secrets.Sahana18032007 }}
+        # Fixed: Updated to match your exact uppercase GitHub Secret keys
+        username: ${{ secrets.SAHANALAKSHMI1 }}
+        password: ${{ secrets.SAHANA18032007 }}
 
-    - name: Generate Unique SHA Tag
+    - name: Generate Unique SHA Tag & Lowercase Namespace Env
       id: vars
-      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      run: |
+        echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        # Converts whatever your username secret is to lower-case to satisfy Docker Hub's naming rules
+        echo "docker_user_lowercase=$(echo "${{ secrets.SAHANALAKSHMI1 }}" | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
     - name: Build and Push Docker Image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
-        tags: ${{ secrets.sahanalakshmi1 }}/student-calc:${{ steps.vars.outputs.sha_short }}
+        tags: ${{ steps.vars.outputs.docker_user_lowercase }}/student-calc:${{ steps.vars.outputs.sha_short }}
 
     - name: Set up Kubeconfig
       run: |
@@ -52,7 +56,7 @@ jobs:
 
     - name: Dynamically Update Deployment Manifest Image Tag
       run: |
-        sed -i "s|DOCKERHUB_USERNAME/student-calc:IMAGE_TAG|${{ secrets.sahanalakshmi1 }}/student-calc:${{ steps.vars.outputs.sha_short }}|g" k8s/deployment.yaml
+        sed -i "s|DOCKERHUB_USERNAME/student-calc:IMAGE_TAG|${{ steps.vars.outputs.docker_user_lowercase }}/student-calc:${{ steps.vars.outputs.sha_short }}|g" k8s/deployment.yaml
 
     - name: Deploy to Kubernetes
       run: |
