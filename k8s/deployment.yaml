@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-calc-deployment
+  labels:
+    app: student-calc
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: student-calc
+  template:
+    metadata:
+      labels:
+        app: student-calc
+    spec:
+      containers:
+      - name: student-calc
+        image: DOCKERHUB_USERNAME/student-calc:IMAGE_TAG # Replaced programmatically by CI runner
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-calc-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: student-calc
